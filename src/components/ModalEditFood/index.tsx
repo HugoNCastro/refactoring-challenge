@@ -1,30 +1,33 @@
-import { Component, createRef } from 'react';
+import { Dispatch, createRef } from 'react';
 import { FiCheckSquare } from 'react-icons/fi';
 
 import { Form } from './styles';
-import Modal from '../Modal';
-import Input from '../Input';
+import {Modal} from '../Modal';
+import {Input} from '../Input';
+import { FoodObject } from '../../@types/types'
+import { FormHandles } from '@unform/core'
 
-class ModalEditFood extends Component {
-  constructor(props) {
-    super(props);
+interface Props {
+  isOpen: boolean
+  setIsOpen: Dispatch<boolean>
+  editingFood: FoodObject
+  handleUpdateFood: (data: FoodObject) => Promise<void>
+}
 
-    this.formRef = createRef()
-  }
+export const ModalEditFood = ({isOpen, 
+  setIsOpen, 
+  editingFood, 
+  handleUpdateFood}: Props) => {
+  
+  const formRef = createRef<FormHandles>();
 
-  handleSubmit = async (data) => {
-    const { setIsOpen, handleUpdateFood } = this.props;
-
-    handleUpdateFood(data);
-    setIsOpen();
+  const handleSubmit = async (data: FoodObject) => {
+    await handleUpdateFood(data);
+    setIsOpen(false);
   };
-
-  render() {
-    const { isOpen, setIsOpen, editingFood } = this.props;
-
     return (
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <Form ref={this.formRef} onSubmit={this.handleSubmit} initialData={editingFood}>
+        <Form ref={formRef} onSubmit={handleSubmit} initialData={editingFood}>
           <h1>Editar Prato</h1>
           <Input name="image" placeholder="Cole o link aqui" />
 
@@ -43,6 +46,3 @@ class ModalEditFood extends Component {
       </Modal>
     );
   }
-};
-
-export default ModalEditFood;
